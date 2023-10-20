@@ -1,7 +1,9 @@
 import {Card} from '@rneui/themed';
 import {EventType} from '../utils/type';
-import {Text} from 'react-native';
+import {Text, View} from 'react-native';
+import {StyledText} from '../utils/style';
 type CardProps = {
+  columnIndex: Number;
   event: EventType;
 };
 export function VerisCard(props: CardProps): JSX.Element {
@@ -19,13 +21,30 @@ export function VerisCard(props: CardProps): JSX.Element {
     //     shadowColor: 'rgba(96,96,96,1)', // 设置阴影色
     //   }}
     // />
-    <Card
-      containerStyle={{
-        width: '50%',
+    <View
+      style={{
+          // paddingTop: props.columnIndex === 0 ? 12 : 6,
+          // paddingBottom: props.columnIndex === 0 ? 6 : 12,
+        // paddingTop: 3,
+        // paddingBottom: 3,
       }}>
-      <Card.Title>{props.event.name}</Card.Title>
-      <Card.Divider />
-      <Text>{props.event.dateTime}</Text>
-    </Card>
+      <Card>
+        <Card.Title>{props.event.name}</Card.Title>
+        <Card.Divider />
+        <StyledText
+          classes={[
+            'text-align:center',
+            'font-weight:bold',
+            'text:6xl',
+            'color:black',
+          ]}>
+          {props.event.days}
+        </StyledText>
+        <Card.Divider />
+        <StyledText classes={['text-align:center']}>
+          {props.event.dateTime}
+        </StyledText>
+      </Card>
+    </View>
   );
 }
