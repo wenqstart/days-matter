@@ -1,42 +1,72 @@
 import {StyledView} from '../utils/style';
 import {VerisCard} from '../components/VerisCard';
-import React from 'react';
-import {useSelector} from 'react-redux';
+import React, {useCallback, useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {EventType} from '../utils/type';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {VerisHeader} from '../components/VerisHeader';
-import WaterfallFlow from 'react-native-waterfall-flow';
+import {handleEventList} from '../utils';
+import {
+  clearCurrentEvent,
+  refreshEvent,
+  setCurrEvent,
+} from '../store/features/eventSlice';
+
 export type NavigationProps = {
   navigation: any;
+  route?: any;
 };
+
 export function HomeScreen(props: NavigationProps): JSX.Element {
-  const eventList: EventType[] = useSelector((state: any) => state.event);
+  const eventState = useSelector((state: any) => state.event);
+  const dispatch = useDispatch();
+
+  const initEventList = useCallback(() => {
+    // console.log('eventList', eventList);
+    dispatch(refreshEvent(handleEventList(eventState.eventList)));
+  }, [dispatch, eventState]);
+  useEffect(() => {
+    initEventList();
+  }, [initEventList]);
+  useEffect(() => {
+    dispatch(clearCurrentEvent());
+  }, [dispatch]);
+
+  function enterEventDetail(event: EventType) {
+    dispatch(setCurrEvent(event));
+    props.navigation.navigate('EventDetail', {event});
+  }
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      {/*  头部*/}
-      <VerisHeader navigation={props.navigation} />
-      {/*    核心部分*/}
-      <WaterfallFlow
-        data={eventList}
-        numColumns={2}
-        renderItem={({item, index, columnIndex}) => (
-          <VerisCard columnIndex={columnIndex} event={item} key={item.id} />
-        )}
-      />
+      <View>
+        <VerisHeader navigation={props.navigation} />
+        {/*    核心部分*/}
+        {/*<WaterfallFlow*/}
+        {/*  data={eventList}*/}
+        {/*  numColumns={2}*/}
+        {/*  renderItem={({item, index, columnIndex}) => (*/}
+        {/*    <TouchableOpacity onPress={(e) => {*/}
+        {/*      console.log('e', e)*/}
+        {/*      enterEventDetail(item.id)*/}
+        {/*    }}>*/}
+        {/*      <VerisCard columnIndex={columnIndex} event={item} key={item.id} />*/}
+        {/*    </TouchableOpacity>*/}
+        {/*  )}*/}
+        {/*/>*/}
 
-      {/*                  <View style={styles.cardContainer}>*/}
-      {/*  {eventList.map(event => (*/}
-      {/*    <VerisCard event={event} key={event.id} />*/}
-      {/*  ))}*/}
-      {/*</View>*/}
+        <StyledView classes={['flex:row', 'flex:wrap']}>
+          {eventState.eventList.map((event: EventType) => {
+            return (
+              <StyledView classes={['w:1/2']}>
+                <TouchableOpacity onPress={() => enterEventDetail(event)}>
+                  <VerisCard event={event} key={event.id} />
+                </TouchableOpacity>
+              </StyledView>
+            );
+          })}
+        </StyledView>
+      </View>
     </ScrollView>
   );
 }
-
-// const styles = StyleSheet.create({
-//   cardContainer: {
-//     'column-gap': '10px', // 卡片间距
-//     'column-count': 2, // 卡片列数
-//   },
-// });

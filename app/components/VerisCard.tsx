@@ -1,12 +1,14 @@
 import {Card} from '@rneui/themed';
 import {EventType} from '../utils/type';
-import {Text, View} from 'react-native';
-import {StyledText} from '../utils/style';
+import {StyleSheet, Text, View} from 'react-native';
+import {StyledText, StyledView} from '../utils/style';
 type CardProps = {
-  columnIndex: Number;
+  columnIndex?: number;
   event: EventType;
+  showDetail?: boolean;
 };
 export function VerisCard(props: CardProps): JSX.Element {
+  const {event: currentEvent, showDetail} = props;
   return (
     // <View
     //   style={{
@@ -21,30 +23,33 @@ export function VerisCard(props: CardProps): JSX.Element {
     //     shadowColor: 'rgba(96,96,96,1)', // 设置阴影色
     //   }}
     // />
-    <View
-      style={{
-          // paddingTop: props.columnIndex === 0 ? 12 : 6,
-          // paddingBottom: props.columnIndex === 0 ? 6 : 12,
-        // paddingTop: 3,
-        // paddingBottom: 3,
-      }}>
+    <StyledView>
       <Card>
-        <Card.Title>{props.event.name}</Card.Title>
+        <Card.Title>
+          <StyledText
+            classes={[
+              'text-align:center',
+              `text:${showDetail ? '2xl' : 'xl'}`,
+            ]}>
+            {currentEvent.showName}
+          </StyledText>
+        </Card.Title>
         <Card.Divider />
         <StyledText
           classes={[
             'text-align:center',
             'font-weight:bold',
-            'text:6xl',
+            `text:${showDetail ? '9xl' : '7xl'}`,
             'color:black',
           ]}>
-          {props.event.days}
+          {currentEvent.days}
         </StyledText>
         <Card.Divider />
-        <StyledText classes={['text-align:center']}>
-          {props.event.dateTime}
+        <StyledText
+          classes={['text-align:center', `text:${showDetail ? '2xl' : 'xl'}`]}>
+          {showDetail ? '目标日： ' : ''} {props.event.dateTime}
         </StyledText>
       </Card>
-    </View>
+    </StyledView>
   );
 }
