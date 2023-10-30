@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {EventType} from '../../utils/type';
 import _ from 'lodash';
+import {handleEventList} from "../../utils";
 
 const initialEventList: EventType[] = [
   {
@@ -39,7 +40,7 @@ export const eventSlice = createSlice({
     updateDay: (state, {payload}) => {
       console.log('payload', payload);
       const updateEvent = state.eventList.find(
-        event => (event.id = payload.id),
+        event => event.id === payload.id,
       );
       Object.assign(updateEvent!, payload);
     },
@@ -49,12 +50,10 @@ export const eventSlice = createSlice({
     deleteDay: (state, payload) => {
       // state.push(payload.value);
     },
-    refreshEvent: (state, {payload}) => {
-      console.log('payload', payload);
-      console.log('payload', _.cloneDeep(payload));
+    refreshEvent: state => {
       // state = payload
       // state.length = 0
-      // state.eventList = _.cloneDeep(payload);
+      state.eventList = _.cloneDeep(handleEventList(state.eventList))
     },
     setCurrEvent: (state, {payload}) => {
       state.currentEvent = payload;

@@ -18,16 +18,12 @@ export type NavigationProps = {
 };
 
 export function HomeScreen(props: NavigationProps): JSX.Element {
-  const eventState = useSelector((state: any) => state.event);
+  const eventList = useSelector((state: any) => state.event.eventList);
   const dispatch = useDispatch();
 
-  const initEventList = useCallback(() => {
-    // console.log('eventList', eventList);
-    dispatch(refreshEvent(handleEventList(eventState.eventList)));
-  }, [dispatch, eventState]);
   useEffect(() => {
-    initEventList();
-  }, [initEventList]);
+    dispatch(refreshEvent());
+  }, [dispatch]);
   useEffect(() => {
     dispatch(clearCurrentEvent());
   }, [dispatch]);
@@ -56,11 +52,11 @@ export function HomeScreen(props: NavigationProps): JSX.Element {
         {/*/>*/}
 
         <StyledView classes={['flex:row', 'flex:wrap']}>
-          {eventState.eventList.map((event: EventType) => {
+          {eventList.map((event: EventType) => {
             return (
-              <StyledView classes={['w:1/2']}>
+              <StyledView classes={['w:1/2']} key={event.id}>
                 <TouchableOpacity onPress={() => enterEventDetail(event)}>
-                  <VerisCard event={event} key={event.id} />
+                  <VerisCard event={event} />
                 </TouchableOpacity>
               </StyledView>
             );
