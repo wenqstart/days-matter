@@ -45,10 +45,15 @@ export function VerisCard(props: CardProps): JSX.Element {
           {currentEvent.days}
         </StyledText>
         <Card.Divider />
-        <StyledText
-          classes={['text-align:center', `text:${showDetail ? '2xl' : 'xl'}`]}>
-          {showDetail ? '目标日： ' : ''} {props.event.dateTime}
-        </StyledText>
+        <Card.Title>
+          <StyledText
+            classes={[
+              'text-align:center',
+              `text:${showDetail ? '2xl' : 'xl'}`,
+            ]}>
+            {showDetail ? '目标日： ' : ''} {props.event.dateTime}
+          </StyledText>
+        </Card.Title>
       </Card>
     </StyledView>
   );

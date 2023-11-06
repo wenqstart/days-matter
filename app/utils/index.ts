@@ -8,9 +8,13 @@ import {v4 as uuid} from 'uuid';
  * @param enDate  结束日期 yyyy-MM-dd
  * @returns {number} 两日期相差的天数
  */
-export function getDaysBetween(startDate: string, enDate: string) {
+export function getDaysBetween(startDate: string, endDate: string) {
+  console.log('startDate', startDate);
+  console.log('endDate', endDate);
   const sDate = Date.parse(startDate);
-  const eDate = Date.parse(enDate);
+  const eDate = Date.parse(endDate);
+  console.log('sDate', sDate);
+  console.log('eDate', eDate);
   // if (sDate > eDate) {
   //   return '0';
   // }
@@ -18,7 +22,7 @@ export function getDaysBetween(startDate: string, enDate: string) {
   // if (sDate === eDate) {
   //   return '1';
   // }
-  return (eDate - sDate) / (1 * 24 * 60 * 60 * 1000);
+  return Math.ceil((eDate - sDate) / (1 * 24 * 60 * 60 * 1000));
 }
 
 /**
@@ -31,17 +35,19 @@ export function transformTimezoneOffset(date: Date) {
 
   // 当前时间 = 包含时差的当前时间 + 时差时间，getTimezoneOffset() 获取时差（以分钟为单位），转为小时需要除以 60
   // newDate.setHours(newDate.getHours() + newDate.getTimezoneOffset() / 60);
-  newDate.setHours(newDate.getHours() + 8);
+  // newDate.setHours(newDate.getHours() + 8);
   return newDate;
 }
 
 /**
- *  时间格式化
+ *  时间格式化 YYYY-MM-DD
  * @param date
  */
 export function transformDate(date: Date) {
-  // console.log('newDate', newDate);
-  return moment(transformTimezoneOffset(date)).format('YYYY-MM-DD');
+  // console.log('transformDate', date);
+  // 选择的每个时间（UTC）都要转成中国标准时间（CST）
+  // return moment(transformTimezoneOffset(date)).format('YYYY-MM-DD');
+  return moment(date).format('YYYY-MM-DD');
 }
 
 /**
@@ -51,10 +57,15 @@ export function transformDate(date: Date) {
 export function transformEvent(event: EventType) {
   console.log('event', event);
   const {name: eventName, dateTime: dateDisplay} = event;
+  // 当前日期
   const currentDay = transformDate(new Date());
+  console.log('currentDay', currentDay);
+  // 目标日日期
   const targetDay = transformDate(new Date(dateDisplay));
+  console.log('targetDay', targetDay);
+  // 时间间隔
   let dateInterval = getDaysBetween(currentDay, targetDay);
-  console.log('dateInterval', dateInterval);
+  // 深拷贝事件名称
   let newEventName = _.cloneDeep(eventName);
   if (dateInterval < 0) {
     dateInterval = Math.abs(dateInterval);
@@ -78,9 +89,8 @@ export function transformEvent(event: EventType) {
  * @param eventList
  */
 export function handleEventList(eventList: EventType[]) {
-  let newObj;
   return eventList.map(event => {
-    newObj = transformEvent(event);
-    return {...event, name: newObj.name, days: newObj.days};
+    const {showName, days} = transformEvent(event);
+    return {...event, showName, days};
   });
 }

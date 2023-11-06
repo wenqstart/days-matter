@@ -1,28 +1,22 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {EventType} from '../../utils/type';
 import _ from 'lodash';
-import {handleEventList} from "../../utils";
+import {handleEventList} from '../../utils';
 
 const initialEventList: EventType[] = [
   {
     id: '1',
     name: 'xx生日',
-    showName: 'xx生日',
-    days: '35',
     dateTime: '2023-11-24',
   },
   {
     id: '2',
     name: 'zz生日',
-    showName: 'zz生日',
-    days: '36',
     dateTime: '2023-11-29',
   },
   {
     id: '3',
     name: 'ww生日22',
-    showName: 'ww生日22',
-    days: '39',
     dateTime: '2023-11-30',
   },
 ];
@@ -61,6 +55,12 @@ export const eventSlice = createSlice({
   },
 });
 
-export const {addDay,updateDay,clearCurrentEvent,  deleteDay, refreshEvent, setCurrEvent} =
-  eventSlice.actions;
+export const {
+  addDay,
+  updateDay,
+  clearCurrentEvent,
+  deleteDay,
+  refreshEvent,
+  setCurrEvent,
+} = eventSlice.actions;
 export default eventSlice.reducer;

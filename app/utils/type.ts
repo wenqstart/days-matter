@@ -1,8 +1,8 @@
 export type EventType = {
   id: string;
   name: string;
-  showName: string;
-  days: string;
+  showName?: string;
+  days?: string;
   dateTime: string;
 };
 export type DateMode = {

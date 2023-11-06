@@ -34,7 +34,7 @@ export function AddEvent(props: NavigationProps): JSX.Element {
       setDate(transformTimezoneOffset(new Date(currentEvent.dateTime)));
       setEventName(currentEvent.name);
     }
-  }, [currentEvent]);
+  }, [currentEvent, props.navigation]);
   useEffect(() => {
     return () => {
       // 离开页面时清除 redux 中存储的当前卡片信息
