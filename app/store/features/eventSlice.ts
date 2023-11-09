@@ -41,13 +41,15 @@ export const eventSlice = createSlice({
     clearCurrentEvent: state => {
       state.currentEvent = {};
     },
-    deleteDay: (state, payload) => {
+    deleteDay: (state, {payload}) => {
       // state.push(payload.value);
+      const idx = state.eventList.findIndex(event => event.id === payload.id);
+      state.eventList.splice(idx, 1);
     },
     refreshEvent: state => {
       // state = payload
       // state.length = 0
-      state.eventList = _.cloneDeep(handleEventList(state.eventList))
+      state.eventList = _.cloneDeep(handleEventList(state.eventList));
     },
     setCurrEvent: (state, {payload}) => {
       state.currentEvent = payload;

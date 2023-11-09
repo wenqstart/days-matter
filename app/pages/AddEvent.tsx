@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Button, Icon, Input} from '@rneui/themed';
+import {Button, Dialog, Icon, Input} from '@rneui/themed';
 import {StyledView} from '../utils/style';
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -9,6 +9,7 @@ import {TouchableOpacity} from 'react-native';
 import {
   addDay,
   clearCurrentEvent,
+  deleteDay,
   updateDay,
 } from '../store/features/eventSlice';
 import {NavigationProps} from './HomeScreen';
@@ -48,6 +49,13 @@ export function AddEvent(props: NavigationProps): JSX.Element {
     setDate(currentDate);
   };
 
+  const [visible, setVisible] = useState(false);
+
+  const isUpdate = useMemo(
+    () => currentEvent && currentEvent.id,
+    [currentEvent],
+  );
+
   function showMode() {
     setShow(true);
   }
@@ -56,13 +64,22 @@ export function AddEvent(props: NavigationProps): JSX.Element {
     setEventName(e);
   }
 
-  function addOneDay() {
+  function deleteOneDay() {
+    setVisible(true);
+  }
+
+  function confirmDelete() {
+    dispatch(deleteDay(currentEvent));
+    props.navigation.navigate('Home');
+  }
+
+  function addOrEditOneDay() {
     const newEvent = {
       ...currentEvent,
       name: eventName,
       dateTime: dateDisplay,
     };
-    if (currentEvent && currentEvent.id) {
+    if (isUpdate) {
       dispatch(updateDay(transformEvent(newEvent)));
     } else {
       dispatch(addDay(transformEvent(newEvent)));
@@ -105,20 +122,55 @@ export function AddEvent(props: NavigationProps): JSX.Element {
           negativeButton={{label: '取消'}}
         />
       )}
-      <StyledView classes={['px:2']}>
-        <Button
-          buttonStyle={{
-            backgroundColor: 'rgb(103,148,203)',
-            borderRadius: 3,
-          }}
-          color="blue"
-          radius={'sm'}
-          onPress={addOneDay}
-          type="solid">
-          保存
-          <Icon name="save" color="white" />
-        </Button>
+      <StyledView classes={['flex:row', 'justify:between', 'items:center']}>
+        {isUpdate && (
+          <StyledView classes={['px:2', 'w:1/2']}>
+            <Button
+              buttonStyle={{
+                backgroundColor: 'red',
+                borderRadius: 3,
+              }}
+              color="blue"
+              radius={'sm'}
+              onPress={deleteOneDay}
+              type="solid">
+              删除
+              <Icon name="delete" color="white" />
+            </Button>
+          </StyledView>
+        )}
+        <StyledView classes={['px:2', isUpdate ? 'w:1/2' : 'w:full']}>
+          <Button
+            buttonStyle={{
+              backgroundColor: 'rgb(103,148,203)',
+              borderRadius: 3,
+            }}
+            color="blue"
+            radius={'sm'}
+            onPress={addOrEditOneDay}
+            type="solid">
+            保存
+            <Icon name="save" color="white" />
+          </Button>
+        </StyledView>
       </StyledView>
+      <Dialog isVisible={visible} onBackdropPress={() => setVisible(false)}>
+        <Dialog.Title title="确认删除该事件吗？" />
+        <Dialog.Actions>
+          <Dialog.Button
+            title="确定"
+            color="black"
+            onPress={() => {
+              confirmDelete();
+            }}
+          />
+          <Dialog.Button
+            title="取消"
+            color="#F56C6C"
+            onPress={() => setVisible(false)}
+          />
+        </Dialog.Actions>
+      </Dialog>
     </StyledView>
   );
 }
