@@ -7,17 +7,17 @@ import DateTimePicker, {
 import {DateMode} from '../utils/type';
 import {TouchableOpacity} from 'react-native';
 import {
-  addDay,
+  addEvent,
   clearCurrentEvent,
-  deleteDay,
-  updateDay,
+  deleteEvent,
+  updateEvent,
 } from '../store/features/eventSlice';
 import {NavigationProps} from './HomeScreen';
 import {useDispatch, useSelector} from 'react-redux';
 import {transformDate, transformEvent, transformTimezoneOffset} from '../utils';
 
 export function AddEvent(props: NavigationProps): JSX.Element {
-  console.log('props', props.navigation.setOptions);
+  // console.log('props', props.navigation.setOptions);
 
   const [date, setDate] = useState(new Date());
   const [eventName, setEventName] = useState('');
@@ -44,7 +44,7 @@ export function AddEvent(props: NavigationProps): JSX.Element {
   }, [dispatch]);
   const onChange = (event: DateTimePickerEvent, selectedDate: Date) => {
     const currentDate = selectedDate;
-    console.log(selectedDate);
+    // console.log(selectedDate);
     setShow(false);
     setDate(currentDate);
   };
@@ -69,7 +69,7 @@ export function AddEvent(props: NavigationProps): JSX.Element {
   }
 
   function confirmDelete() {
-    dispatch(deleteDay(currentEvent));
+    dispatch(deleteEvent(currentEvent));
     props.navigation.navigate('Home');
   }
 
@@ -80,9 +80,9 @@ export function AddEvent(props: NavigationProps): JSX.Element {
       dateTime: dateDisplay,
     };
     if (isUpdate) {
-      dispatch(updateDay(transformEvent(newEvent)));
+      dispatch(updateEvent(transformEvent(newEvent)));
     } else {
-      dispatch(addDay(transformEvent(newEvent)));
+      dispatch(addEvent(transformEvent(newEvent)));
     }
     props.navigation.navigate('Home');
   }
@@ -127,10 +127,9 @@ export function AddEvent(props: NavigationProps): JSX.Element {
           <StyledView classes={['px:2', 'w:1/2']}>
             <Button
               buttonStyle={{
-                backgroundColor: 'red',
+                backgroundColor: '#F56C6C',
                 borderRadius: 3,
               }}
-              color="blue"
               radius={'sm'}
               onPress={deleteOneDay}
               type="solid">
@@ -145,7 +144,6 @@ export function AddEvent(props: NavigationProps): JSX.Element {
               backgroundColor: 'rgb(103,148,203)',
               borderRadius: 3,
             }}
-            color="blue"
             radius={'sm'}
             onPress={addOrEditOneDay}
             type="solid">
@@ -155,18 +153,28 @@ export function AddEvent(props: NavigationProps): JSX.Element {
         </StyledView>
       </StyledView>
       <Dialog isVisible={visible} onBackdropPress={() => setVisible(false)}>
-        <Dialog.Title title="确认删除该事件吗？" />
+        <Dialog.Title
+          title="确认删除该事件吗？"
+          titleStyle={{
+            color: 'black',
+          }}
+        />
         <Dialog.Actions>
           <Dialog.Button
             title="确定"
-            color="black"
+            buttonStyle={{
+              backgroundColor: 'rgb(103,148,203)',
+            }}
             onPress={() => {
               confirmDelete();
             }}
           />
           <Dialog.Button
             title="取消"
-            color="#F56C6C"
+            buttonStyle={{
+              backgroundColor: '#F56C6C',
+              marginRight: 5,
+            }}
             onPress={() => setVisible(false)}
           />
         </Dialog.Actions>

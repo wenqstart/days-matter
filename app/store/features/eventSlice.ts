@@ -1,26 +1,59 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {EventType} from '../../utils/type';
 import _ from 'lodash';
-import {handleEventList} from '../../utils';
+import {
+  getEventsFromStorage,
+  handleEventList,
+  setEventsToStorage,
+} from '../../utils';
 
 const initialEventList: EventType[] = [
   {
     id: '1',
-    name: 'xx生日',
-    dateTime: '2023-11-24',
-  },
-  {
-    id: '2',
-    name: 'zz生日',
-    dateTime: '2023-11-29',
-  },
-  {
-    id: '3',
-    name: 'ww生日22',
-    dateTime: '2023-11-30',
+    name: 'New Year',
+    dateTime: '2024-01-01',
   },
 ];
-export const eventSlice = createSlice({
+
+// 从内存中加载所有事件
+export const loadEvents: any = createAsyncThunk(
+  'eventSlice/loadEvents',
+  async (payload, thunkAPI) => {
+    const currentEvents = await getEventsFromStorage();
+    console.log('currentEvents', currentEvents);
+    thunkAPI.dispatch(refreshEvent(currentEvents.concat(initialEventList)));
+  },
+);
+export const addEvent: any = createAsyncThunk(
+  'eventSlice/addEvent',
+  async (payload: EventType, thunkAPI) => {
+    const currentEvents = await getEventsFromStorage();
+    currentEvents.unshift(payload);
+    await setEventsToStorage(currentEvents);
+    thunkAPI.dispatch(addDay(payload));
+  },
+);
+export const updateEvent: any = createAsyncThunk(
+  'eventSlice/updateEvent',
+  async (payload: EventType, thunkAPI) => {
+    const currentEvents = await getEventsFromStorage();
+    const toUpdateEvent = currentEvents.find(event => event.id === payload.id);
+    Object.assign(toUpdateEvent!, payload);
+    await setEventsToStorage(currentEvents);
+    thunkAPI.dispatch(updateDay(payload));
+  },
+);
+export const deleteEvent: any = createAsyncThunk(
+  'eventSlice/deleteEvent',
+  async (payload: EventType, thunkAPI) => {
+    const currentEvents = await getEventsFromStorage();
+    const idx = currentEvents.findIndex(event => event.id === payload.id);
+    currentEvents.splice(idx, 1);
+    await setEventsToStorage(currentEvents);
+    thunkAPI.dispatch(deleteDay(payload));
+  },
+);
+export const {reducer: TodosReducer, actions} = createSlice({
   name: 'event',
   initialState: {
     eventList: initialEventList,
@@ -28,15 +61,14 @@ export const eventSlice = createSlice({
   },
   reducers: {
     addDay: (state, {payload}) => {
-      console.log('payload', payload);
       state.eventList.unshift(payload);
     },
     updateDay: (state, {payload}) => {
-      console.log('payload', payload);
-      const updateEvent = state.eventList.find(
+      // console.log('payload', payload);
+      const toUpdateEvent = state.eventList.find(
         event => event.id === payload.id,
       );
-      Object.assign(updateEvent!, payload);
+      Object.assign(toUpdateEvent!, payload);
     },
     clearCurrentEvent: state => {
       state.currentEvent = {};
@@ -46,10 +78,9 @@ export const eventSlice = createSlice({
       const idx = state.eventList.findIndex(event => event.id === payload.id);
       state.eventList.splice(idx, 1);
     },
-    refreshEvent: state => {
-      // state = payload
-      // state.length = 0
-      state.eventList = _.cloneDeep(handleEventList(state.eventList));
+    refreshEvent: (state, {payload}) => {
+        console.log('refreshEvent', payload)
+      state.eventList = _.cloneDeep(handleEventList(payload));
     },
     setCurrEvent: (state, {payload}) => {
       state.currentEvent = payload;
@@ -64,5 +95,5 @@ export const {
   deleteDay,
   refreshEvent,
   setCurrEvent,
-} = eventSlice.actions;
-export default eventSlice.reducer;
+} = actions;
+export default TodosReducer;

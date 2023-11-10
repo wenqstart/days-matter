@@ -6,7 +6,7 @@ import {APP_NAME} from '../utils/constant';
 import {addMatter} from '../hooks/useEvent';
 
 export function VerisHeader(props: NavigationProps): JSX.Element {
-  console.log('navigation', props.navigation);
+  // console.log('navigation', props.navigation);
 
   const handleAddMatter = useCallback(() => {
     addMatter(props.navigation, 'AddEvent');

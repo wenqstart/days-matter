@@ -1,6 +1,5 @@
 import {Card} from '@rneui/themed';
 import {EventType} from '../utils/type';
-import {StyleSheet, Text, View} from 'react-native';
 import {StyledText, StyledView} from '../utils/style';
 type CardProps = {
   columnIndex?: number;

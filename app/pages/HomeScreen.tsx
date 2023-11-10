@@ -7,7 +7,7 @@ import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {VerisHeader} from '../components/VerisHeader';
 import {handleEventList} from '../utils';
 import {
-  clearCurrentEvent,
+  clearCurrentEvent, loadEvents,
   refreshEvent,
   setCurrEvent,
 } from '../store/features/eventSlice';
@@ -22,7 +22,7 @@ export function HomeScreen(props: NavigationProps): JSX.Element {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(refreshEvent());
+    dispatch(loadEvents());
   }, [dispatch]);
   useEffect(() => {
     dispatch(clearCurrentEvent());

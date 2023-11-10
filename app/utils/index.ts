@@ -2,6 +2,7 @@ import _ from 'lodash';
 import moment from 'moment/moment';
 import {EventType} from './type';
 import {v4 as uuid} from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * @param startDate  开始日期 yyyy-MM-dd
@@ -9,12 +10,12 @@ import {v4 as uuid} from 'uuid';
  * @returns {number} 两日期相差的天数
  */
 export function getDaysBetween(startDate: string, endDate: string) {
-  console.log('startDate', startDate);
-  console.log('endDate', endDate);
+  // console.log('startDate', startDate);
+  // console.log('endDate', endDate);
   const sDate = Date.parse(startDate);
   const eDate = Date.parse(endDate);
-  console.log('sDate', sDate);
-  console.log('eDate', eDate);
+  // console.log('sDate', sDate);
+  // console.log('eDate', eDate);
   // if (sDate > eDate) {
   //   return '0';
   // }
@@ -55,14 +56,14 @@ export function transformDate(date: Date) {
  * @param event
  */
 export function transformEvent(event: EventType) {
-  console.log('event', event);
+  // console.log('event', event);
   const {name: eventName, dateTime: dateDisplay} = event;
   // 当前日期
   const currentDay = transformDate(new Date());
-  console.log('currentDay', currentDay);
+  // console.log('currentDay', currentDay);
   // 目标日日期
   const targetDay = transformDate(new Date(dateDisplay));
-  console.log('targetDay', targetDay);
+  // console.log('targetDay', targetDay);
   // 时间间隔
   let dateInterval = getDaysBetween(currentDay, targetDay);
   // 深拷贝事件名称
@@ -93,4 +94,17 @@ export function handleEventList(eventList: EventType[]) {
     const {showName, days} = transformEvent(event);
     return {...event, showName, days};
   });
+}
+
+// 获取事件列表
+export async function getEventsFromStorage() {
+  try {
+    const currentEvents = await AsyncStorage.getItem('@CurrentEvents');
+    return JSON.parse(currentEvents || '[]') as EventType[];
+  } catch (error) {
+    return [];
+  }
+}
+export async function setEventsToStorage(events: EventType[]) {
+  return AsyncStorage.setItem('@CurrentEvents', JSON.stringify(events));
 }
